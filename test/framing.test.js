@@ -1,7 +1,5 @@
 var framing = require('../lib/framing');
 
-var PORT = 12345;
-
 function runFrameParser(datas) {
     var parser = new framing.FrameParser();
     var frames = [];
