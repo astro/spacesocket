@@ -40,9 +40,10 @@ Ping.prototype.onMessage = function(msg) {
 	rtt > this.maxRtt)
 	this.maxRtt = rtt;
 
-    $('#ping').text(this.pings + ' pongs, avg: ' +
+    $('#ping').empty();
+    $('#ping').append(this.pings + ' pongs, avg: ' +
 		    Math.round(this.rttSum / this.pings) +
-		    ' ms, min: ' + this.minRtt +
+		    ' ms<br>min: ' + this.minRtt +
 		    ' ms, max: ' + this.maxRtt + 'ms');
 
     if (!this.done)
@@ -76,9 +77,10 @@ Download.prototype.onOpen = function() {
 Download.prototype.onMessage = function(msg) {
     this.bytesRecvd += msg.length;
     var elapsed = Date.now() - this.startTime;
-    $('#download').text(human(this.bytesRecvd * 1000 / (elapsed)) + 'B/s, ' +
-			human(this.bytesRecvd) + 'B in ' + elapsed +
-			' ms');
+    $('#download').empty();
+    $('#download').append(human(this.bytesRecvd * 1000 / (elapsed)) + 'B/s<br>' +
+			  human(this.bytesRecvd) + 'B in ' + elapsed +
+			  ' ms');
 };
 
 Download.prototype.onDone = function() {
@@ -100,9 +102,10 @@ Upload.prototype.onOpen = function() {
 	    that.ws.send(dummyData);
 	    that.bytesSent += dummyData.length;
 	    var elapsed = Date.now() - that.startTime;
-	    $('#upload').text(human(that.bytesSent * 1000 / elapsed) + 'B/s' +
-			      human(that.bytesSent) + 'B in ' + elapsed +
-			      ' ms');
+	    $('#upload').empty();
+	    $('#upload').append(human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
+				human(that.bytesSent) + 'B in ' + elapsed +
+				' ms');
 	}
     }, 5);
 };
