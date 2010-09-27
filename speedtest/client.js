@@ -100,7 +100,7 @@ Upload.prototype.onOpen = function() {
 	    that.ws.send(dummyData);
 	    that.bytesSent += dummyData.length;
 	    var elapsed = Date.now() - that.startTime;
-	    $('#upload').text(human(that.bytesSent * 1000 / elapsed) + 'B/s, ' +
+	    $('#upload').text(human(that.bytesSent * 1000 / elapsed) + 'B/s' +
 			      human(that.bytesSent) + 'B in ' + elapsed +
 			      ' ms');
 	}
@@ -143,13 +143,13 @@ if (!WebSocket) {
 } else {
     $('#broken').remove();
 
-    $('body').append('<p><input type="submit" id="run" value="Run"> each test for <input id="duration" value="5" size="2"> seconds</p>');
+    $('body').append('<p class="menu"><input type="submit" id="run" value="Run"> each test for <input id="duration" value="5" size="2"> seconds</p>');
     $('body').append('<dl id="results"></dl>');
     var fields = { ping: 'Roundtrip delay time',
 		   download: 'Downstream bandwidth',
 		   upload: 'Upstream bandwidth' };
     for(var id in fields) {
-	$('#results').append('<dt>' + fields[id] + '</dt><dd id="' + id + '"></dd>');
+	$('#results').append('<dt>' + fields[id] + '</dt><dd id="' + id + '"><i>TBD</i></dd>');
     }
 
     $('#run').click(function() {
