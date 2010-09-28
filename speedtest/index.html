@@ -42,6 +42,30 @@
       #duration {
         text-align: right;
       }
+      #about {
+        position: absolute;
+	bottom: 0;
+	left: 30%;
+	right: 30%;
+	text-align: center;
+	width: 10em;
+	margin: 0 auto;
+        background-color: #ccc;
+	border: 1px solid #777;
+	border-bottom: none;
+	border-top-left-radius: 0.6em;
+	border-top-right-radius: 0.6em;
+	padding: 0.2em;
+      }
+      a {
+        color: black;
+        font-decoration: none;
+	text-shadow: #777 1px 0px 2px;
+      }
+      a:hover {
+        font-decoration: none;
+	text-shadow: white 1px 1px 3px;
+      }
     </style>
   </head>
 
@@ -49,6 +73,12 @@
     <h1>WebSocket Speed Test</h1>
 
     <p id="broken">Get a browser first!</p>
+
+    <p id="about">
+      <a href="http://github.com/astro/spacesocket/tree/master/speedtest/">Code</a>
+      by
+      <a href="http://twitter.com/astro1138">Astro</a>
+    </p>
   </body>
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
