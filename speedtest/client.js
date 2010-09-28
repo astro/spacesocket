@@ -6,7 +6,7 @@ if (!window.console) {
 }
 
 var dummyData = '';
-for(var i = 0; i < 64 * 1024; i++)
+for(var i = 0; i < 16 * 1024; i++)
     dummyData += 'Z';
 
 function human(i) {
@@ -77,13 +77,16 @@ function Download(ws) {
 Download.proto = 'download';
 
 Download.prototype.onOpen = function() {
-    this.startTime = Date.now();
-    this.bytesRecvd = 0;
 };
 
 Download.prototype.onMessage = function(msg) {
-    this.bytesRecvd += msg.length;
-    var elapsed = Date.now() - this.startTime;
+    if (!this.startTime) {
+	this.startTime = Date.now();
+	this.bytesRecvd = 0;
+    } else {
+	this.bytesRecvd += msg.length;
+    }
+    var elapsed = (Date.now() - this.startTime) || 1;
     $('#download').empty();
     $('#download').append(human(this.bytesRecvd * 1000 / (elapsed)) + 'B/s<br>' +
 			  human(this.bytesRecvd) + 'B in ' + elapsed +
@@ -105,7 +108,7 @@ Upload.prototype.onOpen = function() {
     this.startTime = Date.now();
     this.bytesSent = 0;
     this.interval = setInterval(function() {
-	if (that.ws.bufferedAmount < 1) {
+	if (that.ws.bufferedAmount < dummyData.length) {
 	    that.ws.send(dummyData);
 	    that.bytesSent += dummyData.length;
 	    var elapsed = Date.now() - that.startTime;
