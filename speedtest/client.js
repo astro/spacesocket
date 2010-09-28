@@ -80,20 +80,34 @@ function Download(ws) {
 Download.proto = 'download';
 
 Download.prototype.onOpen = function() {
+    this.ws.send(getDuration());
+    $('#download').text('Open');
 };
 
 Download.prototype.onMessage = function(msg) {
+    var that = this;
+
     if (!this.startTime) {
 	this.startTime = Date.now();
+	this.lastMessage = this.startTime + 1;
 	this.bytesRecvd = 0;
     } else {
+	this.lastMessage = Date.now();
 	this.bytesRecvd += msg.length;
+
+	// Schedule (complex) update:
+	if (!this.textUpdate) {
+	    this.textUpdate = setTimeout(function() {
+		delete that.textUpdate;
+
+		var elapsed = that.lastMessage - that.startTime;
+		$('#download').empty();
+		$('#download').append(human(that.bytesRecvd * 1000 / (elapsed)) + 'B/s<br>' +
+				      human(that.bytesRecvd) + 'B in ' + elapsed +
+				      ' ms');
+	    }, 100);
+	}
     }
-    var elapsed = (Date.now() - this.startTime) || 1;
-    $('#download').empty();
-    $('#download').append(human(this.bytesRecvd * 1000 / (elapsed)) + 'B/s<br>' +
-			  human(this.bytesRecvd) + 'B in ' + elapsed +
-			  ' ms');
 };
 
 Download.prototype.onDone = function() {
@@ -110,16 +124,26 @@ Upload.proto = 'upload';
 Upload.prototype.onOpen = function() {
     var that = this;
     this.startTime = Date.now();
+    this.lastMessage = this.startTime + 1;
     this.bytesSent = 0;
     this.interval = setInterval(function() {
+	var sent = false;
 	while(that.ws.bufferedAmount < 1) {
 	    that.ws.send(dummyData);
+	    that.lastMessage = Date.now();
 	    that.bytesSent += dummyData.length;
-	    var elapsed = Date.now() - that.startTime;
-	    $('#upload').empty();
-	    $('#upload').append(human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
-				human(that.bytesSent) + 'B in ' + elapsed +
-				' ms');
+	    sent = true;
+	}
+	if (sent && !that.textUpdate) {
+	    that.textUpdate = setTimeout(function() {
+		delete that.textUpdate;
+
+		var elapsed = that.lastMessage - that.startTime;
+		$('#upload').empty();
+		$('#upload').append(human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
+				    human(that.bytesSent) + 'B in ' + elapsed +
+				    ' ms');
+	    }, 100);
 	}
     }, 1);
 };
@@ -152,7 +176,7 @@ function runTest(t, cb) {
 
     setTimeout(function() {
 	test.onDone();
-    }, parseInt($('#duration').val(), 10) * 1000);
+    }, getDuration() * 1000);
 }
 
 if (!WebSocket) {
@@ -179,4 +203,8 @@ if (!WebSocket) {
 	    });
 	});
     });
+}
+
+function getDuration() {
+    return parseInt($('#duration').val(), 10);
 }

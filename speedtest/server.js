@@ -22,8 +22,17 @@ spacesocket.attach(server, function(conn) {
 	var sender = function() {
 	    while(conn.send(dummyData)) { }
 	};
-	process.nextTick(sender);
-	conn.on('drain', sender);
+	conn.on('data', function(msg) {
+	    var duration = parseInt(msg, 10);
+	    setTimeout(function() {
+		conn.end();
+		// Disable sender:
+		sender = function() { };
+	    }, duration * 1000);
+
+	    sender();
+	    conn.on('drain', sender);
+	});
     } else if (conn.protocol !== 'upload') {
 	conn.end();
     }
