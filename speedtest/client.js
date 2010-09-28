@@ -112,7 +112,7 @@ Upload.prototype.onOpen = function() {
     this.startTime = Date.now();
     this.bytesSent = 0;
     this.interval = setInterval(function() {
-	if (that.ws.bufferedAmount < 1) {
+	while(that.ws.bufferedAmount < 1) {
 	    that.ws.send(dummyData);
 	    that.bytesSent += dummyData.length;
 	    var elapsed = Date.now() - that.startTime;
@@ -121,7 +121,7 @@ Upload.prototype.onOpen = function() {
 				human(that.bytesSent) + 'B in ' + elapsed +
 				' ms');
 	}
-    }, 5);
+    }, 1);
 };
 
 Upload.prototype.onDone = function() {
