@@ -2,7 +2,7 @@ var Connect = require('connect');
 var spacesocket = require('../lib/spacesocket');
 
 var dummyData = '';
-for(var i = 0; i < 64 * 1024; i++)
+for(var i = 0; i < 16 * 1024; i++)
     dummyData += 'Z';
 
 var server = Connect.createServer(
@@ -18,10 +18,11 @@ spacesocket.attach(server, function(conn) {
 		conn.send('pong');
 	});
     } else if (conn.protocol === 'download') {
-	conn.send(dummyData);
-	conn.on('drain', function() {
-	    conn.send(dummyData);
-	});
+	var sender = function() {
+	    while(conn.send(dummyData)) { }
+	};
+	process.nextTick(sender);
+	conn.on('drain', sender);
     } else if (conn.protocol !== 'upload') {
 	conn.end();
     }
