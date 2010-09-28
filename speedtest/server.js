@@ -2,7 +2,7 @@ var Connect = require('connect');
 var spacesocket = require('../lib/spacesocket');
 
 var dummyData = '';
-for(var i = 0; i < 16 * 1024; i++)
+for(var i = 0; i < 1024; i++)
     dummyData += 'Z';
 
 var server = Connect.createServer(

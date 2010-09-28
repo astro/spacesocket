@@ -6,7 +6,7 @@ if (window && !window.console) {
 }
 
 var dummyData = '';
-for(var i = 0; i < 16 * 1024; i++)
+for(var i = 0; i < 1024; i++)
     dummyData += 'Z';
 
 function human(i) {
