@@ -23,12 +23,14 @@ function Ping(ws) {
     this.ws = ws;
     this.rttSum = 0;
     this.pings = 0;
+    $('#ping').text('Opening...');
 }
 
 Ping.proto = 'ping';
 
 Ping.prototype.onOpen = function() {
     this.ping();
+    $('#ping').text('Open');
 };
 
 Ping.prototype.onMessage = function(msg) {
@@ -72,6 +74,7 @@ Ping.prototype.onDone = function() {
 
 function Download(ws) {
     this.ws = ws;
+    $('#download').text('Opening...');
 }
 
 Download.proto = 'download';
@@ -99,6 +102,7 @@ Download.prototype.onDone = function() {
 
 function Upload(ws) {
     this.ws = ws;
+    $('#upload').text('Opening...');
 }
 
 Upload.proto = 'upload';
@@ -108,7 +112,7 @@ Upload.prototype.onOpen = function() {
     this.startTime = Date.now();
     this.bytesSent = 0;
     this.interval = setInterval(function() {
-	if (that.ws.bufferedAmount < dummyData.length) {
+	if (that.ws.bufferedAmount < 1) {
 	    that.ws.send(dummyData);
 	    that.bytesSent += dummyData.length;
 	    var elapsed = Date.now() - that.startTime;
