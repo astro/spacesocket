@@ -1,3 +1,10 @@
+if (!window.console) {
+    var nop = function() { };
+    window.console = { log: nop,
+		       warn: nop,
+		       error: nop };
+}
+
 var dummyData = '';
 for(var i = 0; i < 64 * 1024; i++)
     dummyData += 'Z';
