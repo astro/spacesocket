@@ -31,3 +31,7 @@ spacesocket.attach(server, function(conn) {
     });
 });
 
+process.on('uncaughtException', function(e) {
+    console.log(e.stack);
+    // There's no state to clean up. Phew.
+});
