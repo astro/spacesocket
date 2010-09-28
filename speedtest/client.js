@@ -1,4 +1,4 @@
-if (!window.console) {
+if (window && !window.console) {
     var nop = function() { };
     window.console = { log: nop,
 		       warn: nop,
