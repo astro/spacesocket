@@ -10,7 +10,8 @@ var server = Connect.createServer(
   Connect.staticProvider(__dirname),
   Connect.errorHandler({ dumpExceptions: true, showStack: true })
 );
-server.listen(8000);
+var port = parseInt(process.env.PORT, 10) || 8000;
+server.listen(port);
 spacesocket.attach(server, function(conn) {
     if (conn.protocol === 'ping') {
 	conn.on('data', function(msg) {
