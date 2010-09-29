@@ -16,11 +16,11 @@ spacesocket.attach(server, function(conn) {
     if (conn.protocol === 'ping') {
         conn.on('data', function(msg) {
             if (msg === 'ping')
-                conn.send('pong');
+                conn.write('pong');
         });
     } else if (conn.protocol === 'download') {
         var sender = function() {
-            while(conn.send(dummyData)) { }
+            while(conn.write(dummyData)) { }
         };
         conn.on('data', function(msg) {
             var duration = parseInt(msg, 10);

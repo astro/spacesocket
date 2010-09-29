@@ -21,7 +21,7 @@
 
 ### Writing
 
-    conn.send('Hello, World')
+    conn.write('Hello, World');
 
 ### Closure
 
