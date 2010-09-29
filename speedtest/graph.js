@@ -7,19 +7,21 @@ function Graph(canvas, duration) {
 }
 
 Graph.prototype.addData = function(t, y) {
-    console.log('addData '+t+' '+y);
     if (this.data.length === 0) {
         this.minT = t;
         this.maxT = t + this.maxT - this.minT;
     }
-    if (y > this.maxY)
-        this.maxY = y;
 
     if (this.data.length > 0 &&
-        this.data[this.data.length - 1].t === t)
+        this.data[this.data.length - 1].t === t) {
+	// datum with exact timestamp already exists
         this.data[this.data.length - 1].y += y;
-    else
+	y = this.data[this.data.length - 1].y;  // for maxY
+    } else
         this.data.push({ t: t, y: y });
+
+    if (y > this.maxY)
+        this.maxY = y;
 
     this.scheduleDraw();
 };
@@ -43,15 +45,25 @@ Graph.prototype.draw = function() {
         this.zoom(ctx);
         this.drawData(ctx);
 
+	// // Draw a horizontal line at maxY:
+	// ctx.beginPath();
+	// ctx.moveTo(0, this.maxY);
+	// ctx.lineTo(this.maxT - this.minT, this.maxY);
+	// ctx.closePath();
+	// ctx.strokeStyle = 'red';
+	// ctx.lineWidth = this.maxY / 20;
+	// ctx.stroke();
+
         ctx.restore();
     }
 };
 
 Graph.prototype.zoom = function(ctx) {
     var w = this.canvas.width, h = this.canvas.height;
+    var yTop = this.maxY * 5 / 4;
 
     ctx.translate(0, h);
-    ctx.scale(w / (this.maxT - this.minT), -h / this.maxY);
+    ctx.scale(w / (this.maxT - this.minT), -h / yTop);
 };
 
 Graph.prototype.drawData = function(ctx) {

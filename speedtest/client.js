@@ -143,7 +143,6 @@ Upload.prototype.onOpen = function() {
     var that = this;
     var lastSend;
     this.startTime = Date.now();
-    this.lastMessage = this.startTime + 1;
     this.bytesSent = 0;
     this.interval = setInterval(function() {
         var bytesSentNow = 0, lastMessageBefore = that.lastMessage;
@@ -158,7 +157,7 @@ Upload.prototype.onOpen = function() {
             that.textUpdate = setTimeout(function() {
                 delete that.textUpdate;
 
-                var elapsed = that.lastMessage - that.startTime;
+                var elapsed = Date.now() - that.startTime;
                 $('#upload').empty();
                 $('#upload').append('avg: ' +
                                     human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
