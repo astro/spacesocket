@@ -69,7 +69,7 @@ Graph.prototype.getY = function(y) {
 Graph.prototype.drawData = function(ctx) {
     var that = this;
     ctx.beginPath();
-    ctx.moveTo(this.getX(0), this.getY(0));
+    ctx.moveTo(this.getX(this.minT), this.getY(0));
 
     var current = null, lastX = 0;
     var draw = function() {
