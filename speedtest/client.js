@@ -19,9 +19,10 @@ function human(i) {
     return (Math.round(i * 100) / 100) + ' ' + unit;
 }
 
-function appendGraph(beforeWhat) {
-    var c = $('<canvas></canvas>');
-    c.insertAfter(beforeWhat);
+function appendGraph(afterWhat) {
+    var w = $('dl#results').innerWidth();
+    var c = $('<canvas width="' + w + '" height="32"></canvas>');
+    c.insertAfter(afterWhat);
     var canvas = c[0];
     var g = new Graph(canvas, getDuration());
     return g;

@@ -58,43 +58,44 @@ Graph.prototype.draw = function() {
 
 Graph.prototype.getX = function(t) {
     var w = this.canvas.width;
-    return Math.floor((t - this.minT) * w / (this.maxT - this.minT));
+    return Math.floor((t - this.minT) * w / (this.maxT - this.minT)) + 0.5;
 };
 
 Graph.prototype.getY = function(y) {
     var h = this.canvas.height;
-    return Math.floor(h * (1 - y / this.yTop));
+    return Math.floor(h * (1 - y / this.yTop)) + 0.5;
 };
 
 Graph.prototype.drawData = function(ctx) {
     var that = this;
-    var lastT;
     ctx.beginPath();
     ctx.moveTo(this.getX(0), this.getY(0));
 
-    var current = null;
+    var current = null, lastX = 0;
     var draw = function() {
         if (current) {
             ctx.lineTo(current.x, that.getY(current.y));
-	    if (current.y > that.maxY)
+	    if (current.y > that.maxY) {
+		console.log('maxY: ' + that.maxY + ' -> ' + current.y);
 		that.maxY = current.y;
+	    }
             current = null;
         }
     };
     var consume = function(d) {
         var x = that.getX(d.t);
-        if (current && current.x === d.x) {
+        if (current && current.x === x) {
             current.y += d.y;
         } else {
             draw();
             current = { x: x, y: d.y };
         }
-        lastT = d.t;
+        lastX = x;
     };
     this.data.forEach(consume);
     draw();
 
-    ctx.lineTo(this.getX(lastT), this.getY(0));
+    ctx.lineTo(lastX, this.getY(0));
     ctx.closePath();
     ctx.fillStyle = this.fillStyle || '#777';
     ctx.globalAlpha = 1;
@@ -111,7 +112,7 @@ Graph.prototype.drawGrid = function(ctx) {
         ctx.closePath();
 
         ctx.strokeStyle = '#333';
-        ctx.lineWidth = 0.4;
+        ctx.lineWidth = 0.5;
         if (t % 1000 == 0)
             ctx.globalAlpha = 1;
         else if (t % 500 == 0)
