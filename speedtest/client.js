@@ -19,6 +19,14 @@ function human(i) {
     return (Math.round(i * 100) / 100) + ' ' + unit;
 }
 
+function appendGraph(beforeWhat) {
+    var c = $('<canvas></canvas>');
+    c.insertAfter(beforeWhat);
+    var canvas = c[0];
+    var g = new Graph(canvas, getDuration());
+    return g;
+}
+
 function Ping(ws) {
     this.ws = ws;
     this.rttSum = 0;
@@ -29,17 +37,21 @@ function Ping(ws) {
 Ping.proto = 'ping';
 
 Ping.prototype.onOpen = function() {
-    this.ping();
     $('#ping').text('Open');
+    this.graph = appendGraph('#ping');
+
+    this.ping();
 };
 
 Ping.prototype.onMessage = function(msg) {
+    var now = Date.now();
+
     if (msg !== 'pong') {
 	console.warn('Not a pong, but: ' + msg);
 	return;
     }
 
-    var rtt = Date.now() - this.lastPing;
+    var rtt = now - this.lastPing;
     this.pings++;
     this.rttSum += rtt;
     if (!this.minRtt ||
@@ -48,6 +60,8 @@ Ping.prototype.onMessage = function(msg) {
     if (!this.maxRtt ||
 	rtt > this.maxRtt)
 	this.maxRtt = rtt;
+
+    this.graph.addData(now, rtt);
 
     $('#ping').empty();
     $('#ping').append(this.pings + ' pongs, avg: ' +
@@ -63,7 +77,6 @@ Ping.prototype.onMessage = function(msg) {
 
 Ping.prototype.ping = function() {
     this.ws.send('ping');
-
     this.lastPing = Date.now();
 };
 
@@ -82,17 +95,21 @@ Download.proto = 'download';
 Download.prototype.onOpen = function() {
     this.ws.send(getDuration());
     $('#download').text('Open');
+    this.graph = appendGraph('#download');
 };
 
 Download.prototype.onMessage = function(msg) {
     var that = this;
+    var now = Date.now();
 
     if (!this.startTime) {
-	this.startTime = Date.now();
-	this.lastMessage = this.startTime + 1;
+	this.startTime = now;
+	this.lastMessage = now;
 	this.bytesRecvd = 0;
     } else {
-	this.lastMessage = Date.now();
+	this.graph.addData(now, msg.length / Math.max(now - this.lastMessage, 1));
+
+	this.lastMessage = now;
 	this.bytesRecvd += msg.length;
 
 	// Schedule (complex) update:
@@ -100,9 +117,10 @@ Download.prototype.onMessage = function(msg) {
 	    this.textUpdate = setTimeout(function() {
 		delete that.textUpdate;
 
-		var elapsed = that.lastMessage - that.startTime;
+		var elapsed = Math.min(that.lastMessage - that.startTime, 1);
 		$('#download').empty();
-		$('#download').append(human(that.bytesRecvd * 1000 / (elapsed)) + 'B/s<br>' +
+		$('#download').append('avg: ' +
+				      human(that.bytesRecvd * 1000 / (elapsed)) + 'B/s<br>' +
 				      human(that.bytesRecvd) + 'B in ' + elapsed +
 				      ' ms');
 	    }, 100);
@@ -123,29 +141,35 @@ Upload.proto = 'upload';
 
 Upload.prototype.onOpen = function() {
     var that = this;
+    var lastSend;
     this.startTime = Date.now();
     this.lastMessage = this.startTime + 1;
     this.bytesSent = 0;
     this.interval = setInterval(function() {
-	var sent = false;
-	while(that.ws.bufferedAmount < 1) {
+	var bytesSentNow = 0, lastMessageBefore = that.lastMessage;
+	while(that.ws.bufferedAmount < dummyData.length) {
 	    that.ws.send(dummyData);
 	    that.lastMessage = Date.now();
-	    that.bytesSent += dummyData.length;
-	    sent = true;
+	    bytesSentNow += dummyData.length;
 	}
-	if (sent && !that.textUpdate) {
+	that.bytesSent += bytesSentNow;
+	// Schedule (complex) update:
+	if (bytesSentNow > 0 && !that.textUpdate) {
 	    that.textUpdate = setTimeout(function() {
 		delete that.textUpdate;
 
 		var elapsed = that.lastMessage - that.startTime;
 		$('#upload').empty();
-		$('#upload').append(human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
+		$('#upload').append('avg: ' +
+				    human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
 				    human(that.bytesSent) + 'B in ' + elapsed +
 				    ' ms');
 	    }, 100);
 	}
+	if (bytesSentNow > 0)
+	    that.graph.addData(Date.now(), bytesSentNow / Math.max(that.lastMessage - lastMessageBefore, 1));
     }, 1);
+    this.graph = appendGraph('#upload');
 };
 
 Upload.prototype.onDone = function() {
