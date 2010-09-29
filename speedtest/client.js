@@ -96,6 +96,7 @@ Download.prototype.onOpen = function() {
     this.ws.send(getDuration());
     $('#download').text('Open');
     this.graph = appendGraph('#download');
+    this.graph.fillStyle = '#779';
 };
 
 Download.prototype.onMessage = function(msg) {
@@ -169,6 +170,7 @@ Upload.prototype.onOpen = function() {
             that.graph.addData(Date.now(), bytesSentNow / Math.max(that.lastMessage - lastMessageBefore, 1));
     }, 1);
     this.graph = appendGraph('#upload');
+    this.graph.fillStyle = '#977';
 };
 
 Upload.prototype.onDone = function() {

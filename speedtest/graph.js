@@ -79,7 +79,7 @@ Graph.prototype.drawData = function(ctx) {
 
     ctx.lineTo(lastT - this.minT, 0);
     ctx.closePath();
-    ctx.fillStyle = '#777';
+    ctx.fillStyle = this.fillStyle || '#777';
     ctx.fill();
 };
 
