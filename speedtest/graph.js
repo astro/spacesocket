@@ -20,10 +20,8 @@ Graph.prototype.addData = function(t, y) {
     } else
         this.data.push({ t: t, y: y });
 
-    if (y > this.maxY) {
+    if (y > this.maxY)
         this.maxY = y;
-        this.yTop = this.maxY * 5 / 4;
-    }
 
     this.scheduleDraw();
 };
@@ -43,6 +41,7 @@ Graph.prototype.draw = function() {
 
     if (this.data.length > 0) {
 
+        this.yTop = this.maxY * 5 / 4;
         this.drawGrid(ctx);
         this.drawData(ctx);
 
@@ -64,7 +63,7 @@ Graph.prototype.getX = function(t) {
 
 Graph.prototype.getY = function(y) {
     var h = this.canvas.height;
-    return Math.ceil(h * (1 - y / this.yTop));
+    return Math.floor(h * (1 - y / this.yTop));
 };
 
 Graph.prototype.drawData = function(ctx) {
@@ -77,6 +76,8 @@ Graph.prototype.drawData = function(ctx) {
     var draw = function() {
         if (current) {
             ctx.lineTo(current.x, that.getY(current.y));
+	    if (current.y > that.maxY)
+		that.maxY = current.y;
             current = null;
         }
     };

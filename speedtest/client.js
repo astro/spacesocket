@@ -222,6 +222,9 @@ if (!WebSocket) {
     }
 
     $('#run').click(function() {
+	// clear previous graphs:
+	$('canvas').remove();
+
         $('#run').attr('disabled', 'disabled');
         runTest(Ping, function() {
             runTest(Download, function() {
