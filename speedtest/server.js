@@ -14,31 +14,31 @@ var port = parseInt(process.env.PORT, 10) || 8000;
 server.listen(port);
 spacesocket.attach(server, function(conn) {
     if (conn.protocol === 'ping') {
-	conn.on('data', function(msg) {
-	    if (msg === 'ping')
-		conn.send('pong');
-	});
+        conn.on('data', function(msg) {
+            if (msg === 'ping')
+                conn.send('pong');
+        });
     } else if (conn.protocol === 'download') {
-	var sender = function() {
-	    while(conn.send(dummyData)) { }
-	};
-	conn.on('data', function(msg) {
-	    var duration = parseInt(msg, 10);
-	    setTimeout(function() {
-		conn.end();
-		// Disable sender:
-		sender = function() { };
-	    }, duration * 1000);
+        var sender = function() {
+            while(conn.send(dummyData)) { }
+        };
+        conn.on('data', function(msg) {
+            var duration = parseInt(msg, 10);
+            setTimeout(function() {
+                conn.end();
+                // Disable sender:
+                sender = function() { };
+            }, duration * 1000);
 
-	    sender();
-	    conn.on('drain', sender);
-	});
+            sender();
+            conn.on('drain', sender);
+        });
     } else if (conn.protocol !== 'upload') {
-	conn.end();
+        conn.end();
     }
 
     conn.on('error', function(e) {
-	console.log(e.message);
+        console.log(e.message);
     });
 });
 

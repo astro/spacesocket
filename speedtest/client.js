@@ -1,8 +1,8 @@
 if (window && !window.console) {
     var nop = function() { };
     window.console = { log: nop,
-		       warn: nop,
-		       error: nop };
+                       warn: nop,
+                       error: nop };
 }
 
 var dummyData = '';
@@ -13,8 +13,8 @@ function human(i) {
     var unit = '';
     var units = ['K', 'M', 'G', 'T'];
     while(i > 1024) {
-	i /= 1024;
-	unit = units.shift();
+        i /= 1024;
+        unit = units.shift();
     }
     return (Math.round(i * 100) / 100) + ' ' + unit;
 }
@@ -47,32 +47,32 @@ Ping.prototype.onMessage = function(msg) {
     var now = Date.now();
 
     if (msg !== 'pong') {
-	console.warn('Not a pong, but: ' + msg);
-	return;
+        console.warn('Not a pong, but: ' + msg);
+        return;
     }
 
     var rtt = now - this.lastPing;
     this.pings++;
     this.rttSum += rtt;
     if (!this.minRtt ||
-	rtt < this.minRtt)
-	this.minRtt = rtt;
+        rtt < this.minRtt)
+        this.minRtt = rtt;
     if (!this.maxRtt ||
-	rtt > this.maxRtt)
-	this.maxRtt = rtt;
+        rtt > this.maxRtt)
+        this.maxRtt = rtt;
 
     this.graph.addData(now, rtt);
 
     $('#ping').empty();
     $('#ping').append(this.pings + ' pongs, avg: ' +
-		    Math.round(this.rttSum / this.pings) +
-		    ' ms<br>min: ' + this.minRtt +
-		    ' ms, max: ' + this.maxRtt + 'ms');
+                    Math.round(this.rttSum / this.pings) +
+                    ' ms<br>min: ' + this.minRtt +
+                    ' ms, max: ' + this.maxRtt + 'ms');
 
     if (!this.done)
-	this.ping();  // next
+        this.ping();  // next
     else
-	this.ws.close();
+        this.ws.close();
 };
 
 Ping.prototype.ping = function() {
@@ -103,28 +103,28 @@ Download.prototype.onMessage = function(msg) {
     var now = Date.now();
 
     if (!this.startTime) {
-	this.startTime = now;
-	this.lastMessage = now;
-	this.bytesRecvd = 0;
+        this.startTime = now;
+        this.lastMessage = now;
+        this.bytesRecvd = 0;
     } else {
-	this.graph.addData(now, msg.length / Math.max(now - this.lastMessage, 1));
+        this.graph.addData(now, msg.length / Math.max(now - this.lastMessage, 1));
 
-	this.lastMessage = now;
-	this.bytesRecvd += msg.length;
+        this.lastMessage = now;
+        this.bytesRecvd += msg.length;
 
-	// Schedule (complex) update:
-	if (!this.textUpdate) {
-	    this.textUpdate = setTimeout(function() {
-		delete that.textUpdate;
+        // Schedule (complex) update:
+        if (!this.textUpdate) {
+            this.textUpdate = setTimeout(function() {
+                delete that.textUpdate;
 
-		var elapsed = Math.max(that.lastMessage - that.startTime, 1);
-		$('#download').empty();
-		$('#download').append('avg: ' +
-				      human(that.bytesRecvd * 1000 / elapsed) + 'B/s<br>' +
-				      human(that.bytesRecvd) + 'B in ' + elapsed +
-				      ' ms');
-	    }, 100);
-	}
+                var elapsed = Math.max(that.lastMessage - that.startTime, 1);
+                $('#download').empty();
+                $('#download').append('avg: ' +
+                                      human(that.bytesRecvd * 1000 / elapsed) + 'B/s<br>' +
+                                      human(that.bytesRecvd) + 'B in ' + elapsed +
+                                      ' ms');
+            }, 100);
+        }
     }
 };
 
@@ -146,28 +146,28 @@ Upload.prototype.onOpen = function() {
     this.lastMessage = this.startTime + 1;
     this.bytesSent = 0;
     this.interval = setInterval(function() {
-	var bytesSentNow = 0, lastMessageBefore = that.lastMessage;
-	while(that.ws.bufferedAmount < dummyData.length) {
-	    that.ws.send(dummyData);
-	    that.lastMessage = Date.now();
-	    bytesSentNow += dummyData.length;
-	}
-	that.bytesSent += bytesSentNow;
-	// Schedule (complex) update:
-	if (bytesSentNow > 0 && !that.textUpdate) {
-	    that.textUpdate = setTimeout(function() {
-		delete that.textUpdate;
+        var bytesSentNow = 0, lastMessageBefore = that.lastMessage;
+        while(that.ws.bufferedAmount < dummyData.length) {
+            that.ws.send(dummyData);
+            that.lastMessage = Date.now();
+            bytesSentNow += dummyData.length;
+        }
+        that.bytesSent += bytesSentNow;
+        // Schedule (complex) update:
+        if (bytesSentNow > 0 && !that.textUpdate) {
+            that.textUpdate = setTimeout(function() {
+                delete that.textUpdate;
 
-		var elapsed = that.lastMessage - that.startTime;
-		$('#upload').empty();
-		$('#upload').append('avg: ' +
-				    human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
-				    human(that.bytesSent) + 'B in ' + elapsed +
-				    ' ms');
-	    }, 100);
-	}
-	if (bytesSentNow > 0)
-	    that.graph.addData(Date.now(), bytesSentNow / Math.max(that.lastMessage - lastMessageBefore, 1));
+                var elapsed = that.lastMessage - that.startTime;
+                $('#upload').empty();
+                $('#upload').append('avg: ' +
+                                    human(that.bytesSent * 1000 / elapsed) + 'B/s<br>' +
+                                    human(that.bytesSent) + 'B in ' + elapsed +
+                                    ' ms');
+            }, 100);
+        }
+        if (bytesSentNow > 0)
+            that.graph.addData(Date.now(), bytesSentNow / Math.max(that.lastMessage - lastMessageBefore, 1));
     }, 1);
     this.graph = appendGraph('#upload');
 };
@@ -183,26 +183,26 @@ function runTest(t, cb) {
     var test = new t(ws);
 
     var startTimer = function() {
-	setTimeout(function() {
-	    test.onDone();
-	}, getDuration() * 1000);
+        setTimeout(function() {
+            test.onDone();
+        }, getDuration() * 1000);
     };
 
     ws.onopen = function() {
-	console.log('open');
-	test.onOpen();
-	startTimer();
+        console.log('open');
+        test.onOpen();
+        startTimer();
     };
     ws.onmessage = function(ev) {
-	test.onMessage(ev.data);
+        test.onMessage(ev.data);
     };
     ws.onclose = function() {
-	console.log('close');
-	cb();
+        console.log('close');
+        cb();
     };
     ws.onerror = function(e) {
-	console.error(e);
-	cb();
+        console.error(e);
+        cb();
     };
 }
 
@@ -214,21 +214,21 @@ if (!WebSocket) {
     $('body').append('<p class="menu"><input type="submit" id="run" value="Run"> each test for <input id="duration" value="5" size="2"> seconds</p>');
     $('body').append('<dl id="results"></dl>');
     var fields = { ping: 'Roundtrip delay time',
-		   download: 'Downstream bandwidth',
-		   upload: 'Upstream bandwidth' };
+                   download: 'Downstream bandwidth',
+                   upload: 'Upstream bandwidth' };
     for(var id in fields) {
-	$('#results').append('<dt>' + fields[id] + '</dt><dd id="' + id + '"><i>TBD</i></dd>');
+        $('#results').append('<dt>' + fields[id] + '</dt><dd id="' + id + '"><i>TBD</i></dd>');
     }
 
     $('#run').click(function() {
-	$('#run').attr('disabled', 'disabled');
-	runTest(Ping, function() {
-	    runTest(Download, function() {
-		runTest(Upload, function() {
-		    $('#run').attr('disabled', '');
-		});
-	    });
-	});
+        $('#run').attr('disabled', 'disabled');
+        runTest(Ping, function() {
+            runTest(Download, function() {
+                runTest(Upload, function() {
+                    $('#run').attr('disabled', '');
+                });
+            });
+        });
     });
 }
 
