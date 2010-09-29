@@ -117,10 +117,10 @@ Download.prototype.onMessage = function(msg) {
 	    this.textUpdate = setTimeout(function() {
 		delete that.textUpdate;
 
-		var elapsed = Math.min(that.lastMessage - that.startTime, 1);
+		var elapsed = Math.max(that.lastMessage - that.startTime, 1);
 		$('#download').empty();
 		$('#download').append('avg: ' +
-				      human(that.bytesRecvd * 1000 / (elapsed)) + 'B/s<br>' +
+				      human(that.bytesRecvd * 1000 / elapsed) + 'B/s<br>' +
 				      human(that.bytesRecvd) + 'B in ' + elapsed +
 				      ' ms');
 	    }, 100);
