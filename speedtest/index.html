@@ -20,6 +20,7 @@
         background-color: #ccc;
         border: 1px solid #777;
         border-radius: 0.3em;
+        -moz-border-radius: 0.3em;
         padding: 0.2em;
         text-align: center;
       }
@@ -35,10 +36,20 @@
       }
       input {
         font-weight: bold;
+        border: 1px solid #777;
+        background: -moz-linear-gradient(90deg, white, #ddd);
+        background: -webkit-gradient(linear, left bottom, left top,
+                                     color-stop(0, white), color-stop(1, #ddd));
+      }
+      input:hover {
+        border: 1.5px solid #db2;
       }
       input[type=submit] {
         font-weight: bold;
         cursor: pointer;
+        background: -moz-linear-gradient(90deg, #ddd, white);
+        background: -webkit-gradient(linear, left bottom, left top,
+                                     color-stop(0, #ddd), color-stop(1, white));
       }
       #duration {
         text-align: right;
@@ -51,11 +62,13 @@
         width: 8em;
         margin: 0 auto;
         background-color: #ccc;
-	font-size: 80%;
+        font-size: 80%;
         border: 1px solid #777;
         border-top: none;
         border-bottom-left-radius: 0.6em;
         border-bottom-right-radius: 0.6em;
+        -moz-border-radius-bottomleft: 0.6em;
+        -moz-border-radius-bottomright: 0.6em;
         padding: 0.2em;
       }
       a {
