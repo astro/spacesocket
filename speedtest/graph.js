@@ -64,7 +64,7 @@ Graph.prototype.getX = function(t) {
 
 Graph.prototype.getY = function(y) {
     var h = this.canvas.height;
-    return Math.floor(h * (1 - y / this.yTop));
+    return Math.ceil(h * (1 - y / this.yTop));
 };
 
 Graph.prototype.drawData = function(ctx) {
