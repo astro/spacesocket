@@ -1,5 +1,5 @@
 var Connect = require('connect');
-var spacesocket = require('../lib/spacesocket');
+var spacesocket = require('./lib/spacesocket');
 
 var dummyData = '';
 for(var i = 0; i < 1024; i++)
@@ -7,7 +7,7 @@ for(var i = 0; i < 1024; i++)
 
 var server = Connect.createServer(
   Connect.logger(),
-  Connect.staticProvider(__dirname),
+  Connect.staticProvider(__dirname + '/speedtest'),
   Connect.errorHandler({ dumpExceptions: true, showStack: true })
 );
 var port = parseInt(process.env.PORT, 10) || 8000;
