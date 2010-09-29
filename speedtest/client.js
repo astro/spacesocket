@@ -182,9 +182,16 @@ function runTest(t, cb) {
     var ws = new WebSocket(url, t.proto);
     var test = new t(ws);
 
+    var startTimer = function() {
+	setTimeout(function() {
+	    test.onDone();
+	}, getDuration() * 1000);
+    };
+
     ws.onopen = function() {
 	console.log('open');
 	test.onOpen();
+	startTimer();
     };
     ws.onmessage = function(ev) {
 	test.onMessage(ev.data);
@@ -195,12 +202,8 @@ function runTest(t, cb) {
     };
     ws.onerror = function(e) {
 	console.error(e);
-	test.onError(e);
+	cb();
     };
-
-    setTimeout(function() {
-	test.onDone();
-    }, getDuration() * 1000);
 }
 
 if (!WebSocket) {
